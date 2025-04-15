@@ -1,0 +1,31 @@
+Nombre: Juan Francisco Lebrero
+Email: jlebrero@udesa.edu.ar
+
+# Ejercicio 1
+La Fase 1 de la bomba es una verificación directa de una cadena exacta. Al comenzar, la función carga una dirección de memoria que contiene una frase fija y llama a una función de comparación (`strings_not_equal`) para comparar esa frase con la entrada del usuario. Si las cadenas no coinciden exactamente, la bomba explota; si coinciden, la ejecución continúa normalmente.
+
+Para desactivar esta fase, simplemente hay que ingresar exactamente la frase esperada por la bomba, **sin errores, espacios extra ni diferencias en mayúsculas/minúsculas. En este caso, la cadena correcta es:
+
+"Cada uno es como Dios le hizo, y aun peor muchas veces."
+
+Cualquier desviación, incluso mínima, hará que la función `strings_not_equal` retorne un valor distinto de cero, lo cual activa la bomba.
+
+# Ejercicio 2
+La Fase 2 de la bomba espera como entrada dos números enteros. Internamente, primero verifica que ambos no sean cero (es decir, que su producto sea distinto de cero), y luego comprueba que la suma de los dos sea exactamente **49433** (0xC119 en hexadecimal). Finalmente, los números se pasan a una función llamada `misterio`, que hace un XOR entre ambos y verifica si el resultado es negativo en formato de 32 bits (es decir, si el bit de signo está activado).
+
+Para desactivar la Fase 2, basta con ingresar una pareja de números enteros **(X, Y)** que cumpla simultáneamente estas tres condiciones:  
+1) X + Y = 49433,  
+2) X ≠ 0 y Y ≠ 0,  
+3) (X XOR Y) debe tener el bit más alto activado (ser negativo en 32 bits).  
+Estas combinaciones pueden encontrarse automáticamente con un script que recorra posibles valores de X e identifique los que cumplen las condiciones anteriores. Un ejemplo válido es 50000 -567.
+
+
+# Ejercicio 3
+La Fase 3 de la bomba solicita una entrada formada por un número y una palabra. Internamente, compara ese número con el resultado de una función llamada `cuenta`, que realiza una búsqueda binaria en un arreglo de palabras. En cada paso, `cuenta` compara la palabra ingresada con una palabra del arreglo y acumula el valor ASCII del primer carácter de cada palabra recorrida. Si la palabra no está en el arreglo o si los límites de la búsqueda se invalidan, la bomba explota. Además, el valor retornado debe coincidir exactamente con el número ingresado y estar entre 401 y 799.
+
+Para desactivar la fase, se debe ingresar una palabra que esté en el arreglo y un número tal que, al ejecutarse `cuenta(palabra, palabras, 0, número−1)`, el resultado sea exactamente ese número. Estas combinaciones se pueden encontrar ejecutando un script que prueba todas las palabras y valores posibles dentro del rango permitido, identificando así las entradas válidas que no activan la bomba.
+
+# Ejercicio 4
+La Fase 4 de la bomba consiste en ingresar una cadena de **6 caracteres**, donde cada carácter representa un índice entre 0 y 15 dentro de un arreglo oculto. El valor de cada índice se obtiene aplicando una operación AND (`& 0xF`) sobre el valor ASCII del carácter ingresado. Luego, se suman los valores del arreglo ubicados en esos índices. Si la suma es exactamente **59**, la fase no explota; de lo contrario, se activa la bomba. El desafío está en encontrar una combinación de 6 caracteres tal que, al pasar por la transformación `ASCII & 0xF`, produzca una secuencia de índices cuya suma de valores sea 59.
+
+Para resolver esta fase, se realiza una búsqueda exhaustiva (brute force) de todas las combinaciones posibles de 6 índices entre 0 y 15 que sumen 59 usando los valores del arreglo. Una vez encontradas las combinaciones válidas de índices, se identifican todos los caracteres ASCII imprimibles (entre 32 y 126) que, al aplicárseles `char_code & 0xF`, devuelvan exactamente ese índice. Finalmente, se generan las cadenas correspondientes y se validan como soluciones. Una de las soluciones puede representarse en un formato más legible como "1247JN", donde cada carácter es una forma codificada de representar el índice asociado.
