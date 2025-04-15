@@ -1,9 +1,9 @@
 def strcompare(a: str, b: str) -> int:
     """
-    Compara dos cadenas de forma lexicográfica.
-      Retorna 0 si son iguales,
-      Retorna un valor negativo si 'a' es menor que 'b',
-      Retorna un valor positivo si 'a' es mayor que 'b'.
+    compares two strings lexicographically.
+      returns 0 if they are equal,
+      returns a negative value if 'a' is less than 'b',
+      returns a positive value if 'a' is greater than 'b'.
     """
     if a == b:
         return 0
@@ -13,27 +13,27 @@ def strcompare(a: str, b: str) -> int:
         return 1
 
 def explode_bomb():
-    """Simula la explosión de la bomba lanzando una excepción."""
-    raise Exception("¡La bomba ha explotado! Error en los parámetros de búsqueda.")
+    """simulates the bomb explosion by raising an exception."""
+    raise Exception("the bomb has exploded! error in search parameters.")
 
 def cuenta(input_str: str, palabras: list, low: int, high: int) -> int:
     """
-    Función recursiva que implementa una búsqueda binaria similar al código ensamblador.
+    recursive function that implements a binary search similar to the assembly code.
     
-    Parámetros:
-      - input_str: palabra de entrada que se desea buscar.
-      - palabras: lista de palabras (se asume ordenada).
-      - low: índice inferior del rango.
-      - high: índice superior del rango.
+    parameters:
+      - input_str: input word to search for.
+      - palabras: list of words (assumed sorted).
+      - low: lower index of the range.
+      - high: upper index of the range.
     
-    La función calcula el índice medio usando la fórmula:
+    the function calculates the middle index using the formula:
           mid = (low & high) + ((low ^ high) >> 1)
-    y luego compara `input_str` con la palabra en dicha posición. Si la comparación da 0,
-    retorna el valor ASCII del primer carácter de la palabra encontrada; si no, realiza
-    llamadas recursivas acumulando ese valor.
+    and then compares `input_str` with the word at that position. if the comparison is 0,
+    returns the ascii value of the first character of the found word; otherwise,
+    makes recursive calls accumulating that value.
     
-    Si en algún momento el rango no es válido (por ejemplo, high <= mid o low >= mid),
-    se simula la explosión de la bomba.
+    if at any point the range is not valid (e.g., high <= mid or low >= mid),
+    the bomb explosion is simulated.
     """
     if low > high:
         explode_bomb()
@@ -60,41 +60,41 @@ def cuenta(input_str: str, palabras: list, low: int, high: int) -> int:
 def main():
     import sys
 
-    # Lee el archivo "bomb3/palabras.txt"
+    # reads the file "bomb3/palabras.txt"
     try:
         with open("bomb3/palabras.txt", "r", encoding="utf-8") as file:
-            # Se remueven líneas vacías y se elimina espacios en blanco
+            # removes empty lines and strips whitespace
             palabras = [line.strip() for line in file if line.strip()]
     except FileNotFoundError:
-        print("Error: No se encontró el archivo 'bomb3/palabras.txt'.")
+        print("error: file 'bomb3/palabras.txt' not found.")
         sys.exit(1)
 
     if not palabras:
-        print("Error: La lista de palabras está vacía.")
+        print("error: the word list is empty.")
         sys.exit(1)
 
-    # Ordena la lista (la búsqueda binaria asume que está ordenada)
+    # sorts the list (binary search assumes it is sorted)
     palabras.sort()
 
-    print("Buscando palabras que cumplan con la condición de la Fase 3:")
-    print("El resultado (valor de 'cuenta') debe estar entre 401 y 799.\n")
+    print("searching for words that meet the phase 3 condition:")
+    print("the result (value of 'cuenta') must be between 401 and 799.\n")
 
     valid_found = False
 
-    # Se itera sobre cada palabra del arreglo
+    # iterate over each word in the array
     for word in palabras:
         try:
             resultado = cuenta(word, palabras, 0, len(palabras) - 1)
-            # La condición de la fase es que el valor retornado esté en [401, 799]
+            # the phase condition is that the returned value is in [401, 799]
             if 401 <= resultado <= 799:
-                print(f"Palabra: '{word}'  ->  Cuenta: {resultado}")
+                print(f"word: '{word}'  ->  cuenta: {resultado}")
                 valid_found = True
         except Exception:
-            # Si se lanza excepción, esa palabra no cumple con la condición
+            # if an exception is raised, that word does not meet the condition
             pass
 
     if not valid_found:
-        print("No se encontraron palabras que cumplan la condición.")
+        print("no words found that meet the condition.")
 
 if __name__ == "__main__":
     main()

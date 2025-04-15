@@ -1,19 +1,7 @@
-/***************************************************************************
- * Esta bomba esta basada en un projecto de Carnegie Mellon University.
- * Autores originales: R. Bryant and D. O'Hallaron
- *
- ***************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "support.h"
 #include "phases.h"
-
-/* 
- * Acordarme de borrar este archivo asi los alumnos no saben nada de la bomoba.
- * Asi explotan de manera espectacular. -- Conde de MonteCristo
- *
- */
 
 FILE *infile;
 
@@ -22,7 +10,6 @@ int main(int argc, char *argv[])
     char *input;
 
   
-    /* La bomba sin argumentos usa STDIN */
     if (argc == 1) {  
 	infile = stdin;
     } 
@@ -74,4 +61,3 @@ int main(int argc, char *argv[])
     
     return 0;
 }
-////////

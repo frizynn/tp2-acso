@@ -33,7 +33,7 @@ Una vez dentro del contenedor, puedes ejecutar:
 
 ```bash
 # Navegar al directorio del ejercicio 1
-cd ej1
+cd TP2/src/ej1
 
 # Compilar el ejercicio
 make
@@ -61,7 +61,7 @@ docker run -it --platform linux/amd64 -v "<ruta-absoluta-del-proyecto>:/app" tp2
 
 ## Estructura del proyecto
 
-- **ej1/**: Contiene el código fuente del ejercicio 1
+- **TP2/src/ej1/**: Código fuente y scripts del ejercicio 1
   - **ej1.c**: Implementación en C de las funciones requeridas
   - **ej1.asm**: Implementación en Assembly de las funciones requeridas
   - **ej1.h**: Definiciones de estructuras y prototipos de funciones
@@ -71,6 +71,20 @@ docker run -it --platform linux/amd64 -v "<ruta-absoluta-del-proyecto>:/app" tp2
   - **tester.c**: Implementación de las pruebas automáticas
   - **Makefile**: Configuración de compilación del proyecto
   - **salida.catedra.ej1.txt**: Salida esperada para las pruebas
+  - **salida.caso.propio.ej1.txt**: Salida de pruebas propias
+
+- **TP2/src/bomb3/**: Archivos del ejercicio 2 (bomba binaria)
+  - **bomb**: Ejecutable de la bomba binaria
+  - **bomb.c**: Código fuente de referencia de la bomba (no modificar)
+  - **palabras.txt**: Diccionario de palabras utilizado por la bomba
+  - **input.txt**: Archivo de entrada con las claves para desactivar fases
+  - **respuestas_descripcion.txt**: Explicación de cada fase desactivada y cómo se resolvió
+  - **ID**: Identificador único del alumno
+  - **gdb_refcard_gnu.pdf**: Referencia rápida de GDB
+  - **.gdbinit**: Configuración recomendada para GDB
+  - **bomb_disasm.txt**: Desensamblado completo del ejecutable (generado con objdump)
+  - **phase1.py, phase2.py, phase3.py, phase4.py**: Scripts de apoyo para análisis de fases (si aplica)
+  - **README**: Información breve de la bomba asignada
 
 ## Ejercicio 1
 
@@ -89,6 +103,7 @@ En el directorio de este ejercicio encontrarán los siguientes archivos:
 - **runTester.sh**: Script para ejecutar pruebas completas
 - **tester.c**: Implementación de las pruebas automáticas
 - **salida.catedra.ej1.txt**: Salida esperada para las pruebas
+- **salida.caso.propio.ej1.txt**: Salida de pruebas propias
 
 ### Configuración C vs Assembly
 
@@ -122,9 +137,57 @@ Para ejecutar las pruebas completas:
 ./runTester.sh
 ```
 
-## Ejercicio 2
+## Ejercicio 2: Bomba Binaria
 
-Este ejercicio está pendiente de implementación.
+Este ejercicio consiste en desactivar una bomba binaria mediante ingeniería inversa. La bomba está basada en un proyecto de Carnegie Mellon University y contiene varias fases que deben ser desactivadas proporcionando la entrada correcta.
+
+### Archivos importantes
+
+- **bomb**: Ejecutable de la bomba binaria (NO modificar)
+- **bomb.c**: Código fuente de referencia (solo lectura)
+- **palabras.txt**: Diccionario de palabras utilizado por la bomba
+- **input.txt**: Archivo de entrada con las claves para desactivar fases (debe contener una línea por fase)
+- **respuestas_descripcion.txt**: Explicación de cada fase desactivada y cómo se resolvió
+- **ID**: Identificador único del alumno
+- **gdb_refcard_gnu.pdf**: Referencia rápida de GDB
+- **.gdbinit**: Configuración recomendada para GDB
+- **bomb_disasm.txt**: Desensamblado completo del ejecutable (puede generarse con `objdump -M intel -d bomb > bomb_disasm.txt`)
+- **phase1.py, phase2.py, phase3.py, phase4.py**: Scripts de apoyo para análisis de fases (opcional)
+
+### Ejecución de la bomba
+
+Puedes ejecutar la bomba de la siguiente manera:
+
+```bash
+cd TP2/src/bomb3
+./bomb < input.txt
+```
+
+O bien, para depuración:
+
+```bash
+gdb ./bomb
+# o
+./bomb input.txt
+```
+
+### Entrega
+
+Debes entregar todos los archivos proporcionados y generados en la carpeta correspondiente del repositorio. Asegúrate de incluir:
+- input.txt
+- respuestas_descripcion.txt
+- ID
+- bomb
+- palabras.txt
+- bomb.c
+- gdb_refcard_gnu.pdf
+- .gdbinit
+
+Completa el archivo respuestas_descripcion.txt con tu nombre, email y una breve explicación de cada fase desactivada y cómo la resolviste.
+
+---
+
+Para dudas sobre el uso de herramientas de ingeniería inversa, consulta el enunciado y la referencia rápida de GDB incluida en el proyecto.
 
 
 
