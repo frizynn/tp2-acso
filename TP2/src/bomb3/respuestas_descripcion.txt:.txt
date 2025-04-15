@@ -29,3 +29,8 @@ Para desactivar la fase, se debe ingresar una palabra que esté en el arreglo y 
 La Fase 4 de la bomba consiste en ingresar una cadena de **6 caracteres**, donde cada carácter representa un índice entre 0 y 15 dentro de un arreglo oculto. El valor de cada índice se obtiene aplicando una operación AND (`& 0xF`) sobre el valor ASCII del carácter ingresado. Luego, se suman los valores del arreglo ubicados en esos índices. Si la suma es exactamente **59**, la fase no explota; de lo contrario, se activa la bomba. El desafío está en encontrar una combinación de 6 caracteres tal que, al pasar por la transformación `ASCII & 0xF`, produzca una secuencia de índices cuya suma de valores sea 59.
 
 Para resolver esta fase, se realiza una búsqueda exhaustiva (brute force) de todas las combinaciones posibles de 6 índices entre 0 y 15 que sumen 59 usando los valores del arreglo. Una vez encontradas las combinaciones válidas de índices, se identifican todos los caracteres ASCII imprimibles (entre 32 y 126) que, al aplicárseles `char_code & 0xF`, devuelvan exactamente ese índice. Finalmente, se generan las cadenas correspondientes y se validan como soluciones. Una de las soluciones puede representarse en un formato más legible como "1247JN", donde cada carácter es una forma codificada de representar el índice asociado.
+
+# Fase secreta
+
+>>> x/s 0x4c714f
+0x4c714f:	"abrete_sesamo"
