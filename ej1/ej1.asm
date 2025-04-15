@@ -19,6 +19,28 @@ extern str_concat
 extern strlen
 extern strcpy
 
+; --- Auxiliar: inicializa dos punteros a NULL en una struct de 16 bytes ---
+init_list_struct:
+        mov     QWORD [rax], 0
+        mov     QWORD [rax+8], 0
+        ret
+
+; --- Auxiliar: inicializa nodo de 32 bytes (type, hash, next, prev) ---
+init_node_struct:
+        movzx   edx, BYTE [rbp-20]
+        mov     BYTE [rax+16], dl
+        mov     rdx, QWORD [rbp-32]
+        mov     QWORD [rax+24], rdx
+        mov     QWORD [rax], 0
+        mov     QWORD [rax+8], 0
+        ret
+
+; --- Auxiliar: retorna 0 y sale ---
+return_null:
+        mov     eax, 0
+        leave
+        ret
+
 string_proc_list_create_asm:
         push    rbp
         mov     rbp, rsp
@@ -27,16 +49,10 @@ string_proc_list_create_asm:
         call    malloc
         mov     QWORD [rbp-8], rax
         cmp     QWORD [rbp-8], 0
-        jne     .malloc_success
-        mov     eax, 0
-        jmp     .return
-.malloc_success:
+        je      return_null
         mov     rax, QWORD [rbp-8]
-        mov     QWORD [rax], 0
+        call    init_list_struct
         mov     rax, QWORD [rbp-8]
-        mov     QWORD [rax+8], 0
-        mov     rax, QWORD [rbp-8]
-.return:
         leave
         ret
 
@@ -48,30 +64,15 @@ string_proc_node_create_asm:
         mov     QWORD [rbp-32], rsi
         mov     BYTE [rbp-20], al
         cmp     QWORD [rbp-32], 0
-        jne     .L5
-        mov     eax, 0
-        jmp     .L6
-.L5:
+        je      return_null
         mov     edi, 32
         call    malloc
         mov     QWORD [rbp-8], rax
         cmp     QWORD [rbp-8], 0
-        jne     .L7
-        mov     eax, 0
-        jmp     .L6
-.L7:
+        je      return_null
         mov     rax, QWORD [rbp-8]
-        movzx   edx, BYTE [rbp-20]
-        mov     BYTE [rax+16], dl
+        call    init_node_struct
         mov     rax, QWORD [rbp-8]
-        mov     rdx, QWORD [rbp-32]
-        mov     QWORD [rax+24], rdx
-        mov     rax, QWORD [rbp-8]
-        mov     QWORD [rax], 0
-        mov     rax, QWORD [rbp-8]
-        mov     QWORD [rax+8], 0
-        mov     rax, QWORD [rbp-8]
-.L6:
         leave
         ret
 
@@ -84,9 +85,9 @@ string_proc_list_add_node_asm:
         mov     QWORD [rbp-40], rdx
         mov     BYTE [rbp-28], al
         cmp     QWORD [rbp-24], 0
-        je      .L14
+        je      .end
         cmp     QWORD [rbp-40], 0
-        je      .L14
+        je      .end
         movzx   eax, BYTE [rbp-28]
         mov     rdx, QWORD [rbp-40]
         mov     rsi, rdx
@@ -94,19 +95,19 @@ string_proc_list_add_node_asm:
         call    string_proc_node_create_asm
         mov     QWORD [rbp-8], rax
         cmp     QWORD [rbp-8], 0
-        je      .L15
+        je      .end
         mov     rax, QWORD [rbp-24]
         mov     rax, QWORD [rax]
         test    rax, rax
-        jne     .L13
+        jne     .not_empty
         mov     rax, QWORD [rbp-24]
         mov     rdx, QWORD [rbp-8]
         mov     QWORD [rax], rdx
         mov     rax, QWORD [rbp-24]
         mov     rdx, QWORD [rbp-8]
         mov     QWORD [rax+8], rdx
-        jmp     .L8
-.L13:
+        jmp     .end
+.not_empty:
         mov     rax, QWORD [rbp-24]
         mov     rdx, QWORD [rax+8]
         mov     rax, QWORD [rbp-8]
@@ -118,13 +119,7 @@ string_proc_list_add_node_asm:
         mov     rax, QWORD [rbp-24]
         mov     rdx, QWORD [rbp-8]
         mov     QWORD [rax+8], rdx
-        jmp     .L8
-.L14:
-        nop
-        jmp     .L8
-.L15:
-        nop
-.L8:
+.end:
         leave
         ret
 
@@ -137,13 +132,9 @@ string_proc_list_concat_asm:
         mov     QWORD [rbp-56], rdx
         mov     BYTE [rbp-44], al
         cmp     QWORD [rbp-40], 0
-        je      .L17
+        je      .ret_null
         cmp     QWORD [rbp-56], 0
-        jne     .L18
-.L17:
-        mov     eax, 0
-        jmp     .L19
-.L18:
+        je      .ret_null
         mov     rax, QWORD [rbp-56]
         mov     rdi, rax
         call    strlen
@@ -154,10 +145,7 @@ string_proc_list_concat_asm:
         call    malloc
         mov     QWORD [rbp-8], rax
         cmp     QWORD [rbp-8], 0
-        jne     .L20
-        mov     eax, 0
-        jmp     .L19
-.L20:
+        je      .ret_null
         mov     rdx, QWORD [rbp-56]
         mov     rax, QWORD [rbp-8]
         mov     rsi, rdx
@@ -166,16 +154,16 @@ string_proc_list_concat_asm:
         mov     rax, QWORD [rbp-40]
         mov     rax, QWORD [rax]
         mov     QWORD [rbp-16], rax
-        jmp     .L21
-.L24:
+        jmp     .loop_cond
+.loop:
         mov     rax, QWORD [rbp-16]
         movzx   eax, BYTE [rax+16]
         cmp     BYTE [rbp-44], al
-        jne     .L22
+        jne     .next
         mov     rax, QWORD [rbp-16]
         mov     rax, QWORD [rax+24]
         test    rax, rax
-        je      .L22
+        je      .next
         mov     rax, QWORD [rbp-16]
         mov     rdx, QWORD [rax+24]
         mov     rax, QWORD [rbp-8]
@@ -184,23 +172,26 @@ string_proc_list_concat_asm:
         call    str_concat
         mov     QWORD [rbp-32], rax
         cmp     QWORD [rbp-32], 0
-        jne     .L23
+        jne     .concat_ok
         mov     rax, QWORD [rbp-8]
-        jmp     .L19
-.L23:
+        jmp     .ret
+.concat_ok:
         mov     rax, QWORD [rbp-8]
         mov     rdi, rax
         call    free
         mov     rax, QWORD [rbp-32]
         mov     QWORD [rbp-8], rax
-.L22:
+.next:
         mov     rax, QWORD [rbp-16]
         mov     rax, QWORD [rax]
         mov     QWORD [rbp-16], rax
-.L21:
+.loop_cond:
         cmp     QWORD [rbp-16], 0
-        jne     .L24
+        jne     .loop
         mov     rax, QWORD [rbp-8]
-.L19:
+        jmp     .ret
+.ret_null:
+        mov     eax, 0
+.ret:
         leave
         ret
